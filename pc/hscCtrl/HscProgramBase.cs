@@ -2,6 +2,9 @@
 
 namespace hscCtrl
 {
+    /// <summary>
+    /// Base class used for translating the script
+    /// </summary>
     public abstract class HscProgramBase
     {
         private readonly List<int[]> commands = new List<int[]>();
@@ -11,7 +14,7 @@ namespace hscCtrl
 
         public IEnumerable<int[]> GetCommands()
         {
-            Run();
+            Run(); //this will end up running the script and generating the list of commands which are sent to microcontroller
             return commands;
         }
 
