@@ -21,9 +21,9 @@ namespace hscCtrl
         public static async Task<IEnumerable<int[]>> Evaluate(this string script)
         {
             var executableScript = string.Format(Template, script);
-            Log.Information($"Running the script.");
+            Log.Information($"Executing the script.");
             var result = await Execute(executableScript);
-            Log.Information($"Script generated {result.Count()} instructions.");
+            Log.Information($"Script generated {result.Count()} commands.");
             return result;
         }
 

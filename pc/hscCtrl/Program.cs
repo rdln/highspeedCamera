@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("hscCtrlTests")]
 
@@ -10,6 +11,8 @@ namespace hscCtrl
 {
     static class Program
     {
+        static SingleTaskRunner taskRunner = new SingleTaskRunner();
+
         static void Main(string[] args)
         {
             SetupLogging();
@@ -43,8 +46,29 @@ namespace hscCtrl
 
         private static void FileChanged(object sender, FileSystemEventArgs eventArgs)
         {
-            Log.Information("file changed.");
+            Log.Information("Script file changed.");
+            taskRunner.Add(GetProcessScript(eventArgs.FullPath));
             //ok, now we know the file is changed but, depending on the editor you're using you'd might notice there are more than one events triggered by each save.
+        }
+
+        private static Func<string, Func<Task>> GetProcessScript = (scriptFile) => { return async () => await ProcessScript(scriptFile); };
+        private static async Task ProcessScript(string scriptFile)
+        {
+            try
+            {
+                Log.Information("Processing the script.");
+
+                var commands = await File
+                    .ReadAllText(scriptFile)
+                    .Evaluate();
+                Log.Information($"generated commands: {string.Join(";", commands.Select(command => "[" + string.Join(",", command) + "]").ToArray())}.");
+
+                Log.Information("Script processing done.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error encountered while processing the script.");
+            }
         }
 
         private static void SetupLogging()
