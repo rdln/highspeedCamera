@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hscCtrl", "hscCtrl\hscCtrl.csproj", "{BB99D416-5F85-4BBB-AE24-E7A1D7E623AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hscCtrlTests", "hscCtrlTests\hscCtrlTests.csproj", "{638B1B3A-FDC3-4A98-8017-0D6412AE4B6D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB99D416-5F85-4BBB-AE24-E7A1D7E623AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB99D416-5F85-4BBB-AE24-E7A1D7E623AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB99D416-5F85-4BBB-AE24-E7A1D7E623AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB99D416-5F85-4BBB-AE24-E7A1D7E623AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{638B1B3A-FDC3-4A98-8017-0D6412AE4B6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{638B1B3A-FDC3-4A98-8017-0D6412AE4B6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{638B1B3A-FDC3-4A98-8017-0D6412AE4B6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{638B1B3A-FDC3-4A98-8017-0D6412AE4B6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A7F0B80B-4035-4FA6-A0A6-6F41CA0CFA48}
+	EndGlobalSection
+EndGlobal
