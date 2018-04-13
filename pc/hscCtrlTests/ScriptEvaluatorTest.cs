@@ -1,6 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using hscCtrl;
-using System.Linq;
+﻿using hscCtrl.Script;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace hscCtrlTests
 {
@@ -14,7 +13,7 @@ namespace hscCtrlTests
             var script = $"for (var i = 0; i < {iterations}; i++) {{ Wait(0); }}";
             var commands = script.Evaluate().Result;
             Assert.IsNotNull(commands);
-            Assert.AreEqual(commands.Count(), iterations);
+            Assert.AreEqual(commands.Count, iterations);
         }
     }
 }

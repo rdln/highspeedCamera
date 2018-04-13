@@ -1,4 +1,5 @@
 using hscCtrl;
+using hscCtrl.Script;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 
@@ -13,7 +14,7 @@ namespace hscCtrlTests
             var commands = new HscProgram()
                 .GetCommands();
             Assert.IsNotNull(commands);
-            Assert.IsTrue(commands.Count() == 3);
+            Assert.IsTrue(commands.Count == 3);
         }
 
         class HscProgram : HscProgramBase

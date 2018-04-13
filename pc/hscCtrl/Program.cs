@@ -1,8 +1,11 @@
-﻿using Serilog;
+﻿using hscCtrl.Script;
+using hscCtrl.Serial;
+using Serilog;
 using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("hscCtrlTests")]
@@ -17,7 +20,7 @@ namespace hscCtrl
         {
             SetupLogging();
 
-            var file = args.Length > 0 ? args[0] : "test.script"; //This is the file which we'll watch for changes and [1]
+            var file = args.Length > 0 ? args[0] : "test.script";
             file = Path.GetFullPath(file);
 
             if (!File.Exists(file))
@@ -25,51 +28,52 @@ namespace hscCtrl
                 Log.Error($"File '{file}' not found, exiting.");
                 return;
             }
+            var scriptFile = new ScriptSource(file);
 
-            MonitorFile(file);
+            var port = GetPort(args);
+            Log.Information($"Using port: {port}.");
+            ISerialPortComm serialPortBuilder() => new SerialPortComm(port);
+
+            MonitorFile(scriptFile.File, BuildFileChangedHandler(scriptFile, serialPortBuilder));
             Log.Information($"hscCtrl exiting.");
         }
 
-        private static void MonitorFile(string file)
+        private static string GetPort(string[] args)
+        {
+            var availablePorts = SerialPortComm.GetPorts();
+            Log.Information($"Found {string.Join(", ", availablePorts)}.");
+            var argPort = args.Length > 1 ? args[1] : null;
+            var port = !string.IsNullOrEmpty(argPort) && availablePorts.Any(p => p.Equals(argPort))
+                ? argPort
+                : availablePorts.FirstOrDefault();
+            return port;
+        }
+
+        private static void MonitorFile(string file, FileSystemEventHandler handler)
         {
             Log.Information($"Monitoring file '{file}'.");
 
-            using (var fileWatcher = new FileSystemWatcher(Path.GetDirectoryName(file), Path.GetFileName(file))) // the path parameter needs to be the folder of the file and the filename is used as a filter...
+            using (var fileWatcher = new FileSystemWatcher(Path.GetDirectoryName(file), Path.GetFileName(file)))
             {
-                fileWatcher.Changed += FileChanged; //[1] when changed we'll start acting upon its content.
+                fileWatcher.Changed += handler;
                 fileWatcher.EnableRaisingEvents = true;
                 Console.ReadLine();
                 fileWatcher.EnableRaisingEvents = false;
+                fileWatcher.Changed -= handler;
                 Log.Information($"File monitoring stopped.");
             }
         }
 
-        private static void FileChanged(object sender, FileSystemEventArgs eventArgs)
+        private static Func<IScriptSource, Func<ISerialPortComm>, FileSystemEventHandler> BuildFileChangedHandler = (scriptSource, serialPortFactory) =>
         {
-            Log.Information("Script file changed.");
-            taskRunner.Add(GetProcessScript(eventArgs.FullPath));
-            //ok, now we know the file is changed but, depending on the editor you're using you'd might notice there are more than one events triggered by each save.
-        }
-
-        private static Func<string, Func<Task>> GetProcessScript = (scriptFile) => { return async () => await ProcessScript(scriptFile); };
-        private static async Task ProcessScript(string scriptFile)
-        {
-            try
+            return (sender, args) =>
             {
-                Log.Information("Processing the script.");
+                Log.Information("Script file changed");
+                var scriptProcessingTask = ScriptProcessor.GetProcessScriptTask(scriptSource, serialPortFactory);
+                taskRunner.Add(scriptProcessingTask);
+            };
+        };
 
-                var commands = await File
-                    .ReadAllText(scriptFile)
-                    .Evaluate();
-                Log.Information($"generated commands: {string.Join(";", commands.Select(command => "[" + string.Join(",", command) + "]").ToArray())}.");
-
-                Log.Information("Script processing done.");
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Error encountered while processing the script.");
-            }
-        }
 
         private static void SetupLogging()
         {

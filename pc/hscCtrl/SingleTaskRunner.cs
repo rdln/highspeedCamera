@@ -1,7 +1,5 @@
 ﻿using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,7 +9,7 @@ namespace hscCtrl
     {
         volatile Task task;
         private static readonly object sync = new object();
-        private static readonly TimeSpan Delay = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan Delay = TimeSpan.FromSeconds(1);
 
         public void Add(Func<Task> taskAction)
         {
